@@ -45,33 +45,33 @@ slip_angles_eval = np.linspace(min(slip_angle), max(slip_angle), 100)
 
 # Initialize arrays to store max lateral force and corresponding normal force
 
-# corresponding_normal_force = []
-# normal_force_pred = 500
+corresponding_normal_force = []
+normal_force_pred = 500
 # Iterate over slip angles and normal force to find corresponding lateral forces using the fitted surface
-# muList =[]
-# for force in forceNormal:
-#     max_lateral_force = []
-#     for angle in slip_angles_eval:
-#         # Predict lateral force using the fitted model
-#         X_pred = poly.transform([[angle, force]])
-#         lateral_force_pred = regressor.predict(X_pred)[0]
+muList =[]
+for force in forceNormal:
+    max_lateral_force = []
+    for angle in slip_angles_eval:
+        # Predict lateral force using the fitted model
+        X_pred = poly.transform([[angle, force]])
+        lateral_force_pred = regressor.predict(X_pred)[0]
         
-#         # Append lateral force and corresponding normal force
-#         max_lateral_force.append(abs(lateral_force_pred))
-#     # Calculate effective coefficient of friction
-#     muEff = max(max_lateral_force)/force
-#     muList.append(muEff*.6)
+        # Append lateral force and corresponding normal force
+        max_lateral_force.append(abs(lateral_force_pred))
+    # Calculate effective coefficient of friction
+    muEff = max(max_lateral_force)/force
+    muList.append(muEff*.6)
 
 
     
 # Plot the bitch
     
-# fig = plt.figure(2)
-# ax = fig.add_subplot(111)
-# ax.scatter(forceNormal,muList)
-# ax.set_xlabel("Normal Force")
-# ax.set_ylabel("Mu")
-# plt.show()
+fig = plt.figure(2)
+ax = fig.add_subplot(111)
+ax.scatter(forceNormal,muList)
+ax.set_xlabel("Normal Force")
+ax.set_ylabel("Mu")
+plt.show()
 
 
 
