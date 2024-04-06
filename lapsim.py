@@ -1,13 +1,9 @@
-
-def timeCornerCalc(speedEntry,radius,angle):
+import tireModel
+def timeCornerCalc(radius,angle):
     '''
     Function will calculate the time it take to go through a corner
 
     Inputs:
-    'speedEntry'
-    Speed Entry to the track formation. This case its the corner entry speed. Equal to speed at end of braking
-    Type: Float 
-    Units: m/s
 
     'radius'
     The radius of the turn
@@ -26,8 +22,7 @@ def timeCornerCalc(speedEntry,radius,angle):
     Units: s
 
     '''
-    import tireModel 
-
+    
     # Calcuklate load transfer in corner. SHould be entire lateral load transfer. Load for all wheels
 
     
@@ -45,5 +40,20 @@ def timeCornerCalc(speedEntry,radius,angle):
 
     return timeCorner
 
-def 
+def timeThrottleCalc(vEntry,power,vMaxAllowed):
     
+    # import as needed
+
+
+    # determine if power or traction limited
+
+
+    # 
+
+    return timeThrottle 
+
+def timeBrakeCalc(vEntry,vCorner):
+
+    # max possible deceleration
+
+    # calculate load under braking
