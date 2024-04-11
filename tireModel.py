@@ -79,7 +79,7 @@ plt.show()
 ### Will use such function to calcuate grip levels
 ### Longitudinal forces are next, god help me
 
-def calcuateMu(forceNormal):
+def calculateMu(forceNormal):
     '''
     This function will utilize the fitted spline to calculate the coeffecient of friction for a given normal load
 

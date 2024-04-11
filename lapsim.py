@@ -1,4 +1,4 @@
-import tireModel
+from tireModel import calculateMu
 def timeCornerCalc(radius,angle):
     '''
     Function will calculate the time it take to go through a corner
@@ -40,20 +40,123 @@ def timeCornerCalc(radius,angle):
 
     return timeCorner
 
-def timeThrottleCalc(vEntry,power,vMaxAllowed):
+def timeStrightCalc(vEntry,vMaxAllowed,params):
     
     # import as needed
 
+    # break apart params dictionary
 
-    # determine if power or traction limited
+    cgZ = params['CG'][2]
+    wheelbase = params['wheelbase']
+    cgX = params['CG'][0]
+    mass = params['mass']
+    straightLength = params['track']['straight']
+
+    # calculate max accel 
+
+    vMax = vMaxAllowed / 2.237  # maxV from mph to m/s
+    # powerHp = 65
+    # gravity = 9.81
+    # powerWatts = powerHp * 745.7 # watts
+    # accelPowerLimit = (powerWatts / mass) * (vMax - vEntry) / (vMax**2 - vEntry**2)  # max accel in m/s^2 POWER LIMIT
 
 
-    # 
+    ## accel but with torque
 
-    return timeThrottle 
+    torque = 30 *1.35582 # Nm
+    wheelRadius = (8/12) *.0254 ## m
+    accelPowerLimit = (torque/wheelRadius)/mass
 
-def timeBrakeCalc(vEntry,vCorner):
+    # calculate loads on rear tires
 
-    # max possible deceleration
+    rearLoad = (mass/wheelbase)*(gravity*(wheelbase-cgX)+(accelPowerLimit*cgZ))
+    rearLoadTire = rearLoad / 2
+    muPowerLimit = calculateMu(rearLoadTire) ## designated as mu for power limited case
 
-    # calculate load under braking
+    # calculate load on tire for max accel without tire lift
+
+    # solve for accel such that frontLoad = 0 
+
+    tol = 1e-6
+    check = 1
+    iter = 0
+    accelGuess = 1.2*gravity
+    maxIter = 1e4
+    while (check > tol) and (iter<maxIter):
+    
+        # calculate horizontal force by tires from guess accel
+    
+        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-X)+(accelGuess*cgZ))
+        rearLoadTire = rearLoad/2
+        muDerive = calculateMu(rearLoadTire)*0.95
+        
+        forceTraction = muDerive*rearLoad
+        accelDerive = (forceTraction)/mass        
+        error = accelDerive - accelGuess
+        check = abs(error)
+        accelGuess += accelDerive *error
+        
+        iter += 1   
+
+    accelGripLimit = accelGuess
+
+
+    if accelGripLimit < accelPowerLimit:
+        accelMaster = accelGripLimit
+    else:
+        accelMaster = accelPowerLimit
+
+    # calculate distance traveled to go from corner exit to max speed
+
+    deltaXThrottle = (vMax**2 - vEntry**2)/(2*accelMaster)
+
+    # calcualte time on throttle
+    timeThrottle = (vMax-vEntry)/accelMaster
+    # brake calcualtions 
+
+
+    tol = 1e-6
+    check = 1
+    iter = 0
+    deccelGuess = 1.2*gravity
+    maxIter = 1e4
+    while (check > tol) and (iter<maxIter):
+    
+        # calculate horizontal force by tires from guess accel
+    
+        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-X)+(accelGuess*cgZ))
+        frontLoad = mass*gravity - rearLoad
+        frontLoadTire = frontLoad/2
+        muDerive = calculateMu(frontLoadTire)*0.95
+        
+        forceTraction = muDerive*rearLoad
+        deccelDerive = (forceTraction)/mass        
+        error = deccelDerive - deccelGuess
+        check = abs(error)
+        deccelGuess += deccelDerive *error
+        
+        iter += 1 
+
+    deccelMaster = deccelGuess
+
+    # calcualte distance and time to brake
+
+    deltaXBrake = (vMax**2 - vEntry**2)/(2*deccelMaster)
+
+    timeBrake = (vMax-vEntry)/deccelMaster
+
+    # calculate time spent at max speed
+
+    distanceLimiter = straightLength - (deltaXThrottle + deltaXBrake)
+
+    timeLimiter = distanceLimiter/vMax
+
+
+    # put it all together 
+
+
+    timeStright = timeThrottle + timeBrake + timeLimiter
+
+
+    return timeStraight 
+
