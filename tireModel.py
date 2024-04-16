@@ -62,16 +62,18 @@ for force in forceNormal:
     muEff = max(max_lateral_force)/force
     muList.append(muEff*.6)
 
-
-    
+hellabands = np.linspace(0,2000)
+coeff = np.polyfit(forceNormal,muList,3)
+func = np.poly1d(coeff)
 # Plot the bitch
     
-fig = plt.figure(2)
-ax = fig.add_subplot(111)
-ax.scatter(forceNormal,muList)
-ax.set_xlabel("Normal Force")
-ax.set_ylabel("Mu")
-plt.show()
+# fig = plt.figure(2)
+# ax = fig.add_subplot(111)
+# ax.scatter(forceNormal,muList)
+# ax.set_xlabel("Normal Force")
+# ax.set_ylabel("Mu")
+# ax.scatter(forceNormal,func(forceNormal))
+# plt.show()
 
 
 
@@ -79,29 +81,31 @@ plt.show()
 ### Will use such function to calcuate grip levels
 ### Longitudinal forces are next, god help me
 
-def calculateMu(forceNormal):
-    '''
-    This function will utilize the fitted spline to calculate the coeffecient of friction for a given normal load
 
-    Inputs:
-    'forceNormal' - Type: Float 
 
-    Outputs:
-    'muEff' - Type: Float
-    '''
-    max_lateral_force = []
-    slip_angles_eval = np.linspace(-.2, .2, 100)
-    for angle in slip_angles_eval:
-            # Predict lateral force using the fitted model
-            X_pred = poly.transform([[angle, forceNormal]])
-            lateral_force_pred = regressor.predict(X_pred)[0]
+# def calculateMu(forceNormal):
+#     '''
+#     This function will utilize the fitted spline to calculate the coeffecient of friction for a given normal load
+
+#     Inputs:
+#     'forceNormal' - Type: Float 
+
+#     Outputs:
+#     'muEff' - Type: Float
+#     '''
+#     max_lateral_force = []
+#     slip_angles_eval = np.linspace(-.2, .2, 100)
+#     for angle in slip_angles_eval:
+#             # Predict lateral force using the fitted model
+#             X_pred = poly.transform([[angle, forceNormal]])
+#             lateral_force_pred = regressor.predict(X_pred)[0]
             
-            # Append lateral force and corresponding normal force
-            max_lateral_force.append(abs(lateral_force_pred))
-    muEff = max(max_lateral_force)/forceNormal
+#             # Append lateral force and corresponding normal force
+#             max_lateral_force.append(abs(lateral_force_pred))
+#     muEff = max(max_lateral_force)/forceNormal
 
-    return muEff
-
+#     return muEff
+##### SHIT ABOVE IS ASS AND TOO HARD TO IMPLEMENT BOOOOOOOOO WOMP
 ### USE BELOW TO CALCULATE THE LATERAL FORCE 
     
 # for angle in slip_angles_eval:
@@ -112,5 +116,9 @@ def calculateMu(forceNormal):
 #         # Append lateral force and corresponding normal force
 #         max_lateral_force.append(abs(lateral_force_pred))
 # muEff = max(max_lateral_force)/force
-    
+
+def calculateMu(force):
+
+    return func(force)   
 ####
+print(calculateMu(1000))

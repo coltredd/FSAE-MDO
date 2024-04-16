@@ -1,5 +1,5 @@
 from tireModel import calculateMu
-def timeCornerCalc(radius,angle):
+def timeCornerCalc(params):
     '''
     Function will calculate the time it take to go through a corner
 
@@ -22,23 +22,52 @@ def timeCornerCalc(radius,angle):
     Units: s
 
     '''
+    cgX = params['car']['CG'][0]
+    cgY = params['car']['CG'][1]
+    cgZ = params['car']['CG'][2]
+    mass = params['car']['mass']
+    cornerRadius = params['track']['radius']
+    Ltw = params['car']['trackwidth']
+
+
+    Wf = mass*gravity*(cgX/Ltw)                                             
+    Wr = mass*gravity*(1-cgX/Ltw)
     
     # Calcuklate load transfer in corner. SHould be entire lateral load transfer. Load for all wheels
-
+    tol = 1e-6
+    check = 1
+    iter = 0
+    cornerGuess = 1.5*gravity
+    maxIter = 1e4
     
-    # Find maximum normal load tire. This will result in the lowest grip available without having to call calculateMu and waste run time
-    maxLoad = max(loads)
+    
+    while (check > tol) and (iter<maxIter):
 
-    muEff = calculateMu(maxLoad)
-    # calculate max velocity around corner using derived equations
+        reactFL = (1/Ltw)*(Wf*((Ltw/2)+cgY)+mass*cornerGuess*cgZ)
+        reactFR = Wf - reactFL 
+        reactRL = (1/Ltw)*(Wr*((Ltw/2)+cgY)+mass*cornerGuess*cgZ)
+        reactRR = Wr - reactRL
+        minReact = max(reactFL,reactRR,reactRL,reactFR)
 
-    vMax = (muEff*radius)**(1/2)
+        muDerive = calculateMu(minReact)
+        
+        cornerDerive = muDerive*gravity
+        
+        error = cornerDerive - cornerGuess
+        check = abs(error)
+        cornerGuess += error / (muDerive * mass * cgZ) 
+        iter += 1 
+
+    cornerMaster = cornerGuess/gravity
+    
+    
+    vMax = (cornerMaster*cornerRadius)**(1/2)
 
     # Calculate time to go around corner
 
-    timeCorner = (3.14159265*radius)*(angle/180)/vMax
-
-    return timeCorner
+    timeCorner = (3.14159265*cornerRadius)/vMax
+    print('Max Corner G: ', cornerMaster)
+    return vMax,timeCorner
 
 def timeStrightCalc(vEntry,vMaxAllowed,params):
     
@@ -46,10 +75,10 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
 
     # break apart params dictionary
 
-    cgZ = params['CG'][2]
-    wheelbase = params['wheelbase']
-    cgX = params['CG'][0]
-    mass = params['mass']
+    cgZ = params['car']['CG'][2]
+    wheelbase = params['car']['wheelbase']
+    cgX = params['car']['CG'][0]
+    mass = params['car']['mass']
     straightLength = params['track']['straight']
 
     # calculate max accel 
@@ -86,7 +115,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
     
         # calculate horizontal force by tires from guess accel
     
-        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-X)+(accelGuess*cgZ))
+        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-cgX)+(accelGuess*cgZ))
         rearLoadTire = rearLoad/2
         muDerive = calculateMu(rearLoadTire)*0.95
         
@@ -94,7 +123,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
         accelDerive = (forceTraction)/mass        
         error = accelDerive - accelGuess
         check = abs(error)
-        accelGuess += accelDerive *error
+        accelGuess += error / (accelDerive * mass * cgZ)
         
         iter += 1   
 
@@ -124,7 +153,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
     
         # calculate horizontal force by tires from guess accel
     
-        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-X)+(accelGuess*cgZ))
+        rearLoad = (mass/wheelbase)*(gravity*(wheelbase-cgX)+(accelGuess*cgZ))
         frontLoad = mass*gravity - rearLoad
         frontLoadTire = frontLoad/2
         muDerive = calculateMu(frontLoadTire)*0.95
@@ -133,7 +162,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
         deccelDerive = (forceTraction)/mass        
         error = deccelDerive - deccelGuess
         check = abs(error)
-        deccelGuess += deccelDerive *error
+        deccelGuess += error / (deccelDerive * mass * cgZ)
         
         iter += 1 
 
@@ -155,8 +184,12 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
     # put it all together 
 
 
-    timeStright = timeThrottle + timeBrake + timeLimiter
+    timeStraight = timeThrottle + timeBrake + timeLimiter
 
-
+    print('Max Acceleration G: ',accelMaster/gravity)
+    print('Max Braking Accel: ', deccelMaster/gravity)
     return timeStraight 
 
+        # calculate horizontal force by tires from guess accel
+
+gravity = 9.80665
