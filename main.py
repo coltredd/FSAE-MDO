@@ -105,28 +105,31 @@ def optimizeLap(startingPoint, method='SLSQP',max_iter=1e3):
     
     return result
 
-initialPoint = [.734,0,.292,1.27,1.53]
-result = optimizeLap(initialPoint)
-print(result.x)
+# initialPoint = [.734,0,.292,1.27,1.53]
+# result = optimizeLap(initialPoint)
+# print(result.x)
+# print(result.jac)
 
 
-# results = []
-# num_runs = 10
-# # multistart that jawn
-# for run in range(num_runs):
+results = []
+num_runs = 10
+# multistart that jawn
+for run in range(num_runs):
     
-#     initialPoint = np.random.uniform([.2,-.1,.1,.75,1.2],[1,.1,.5,1.8,2])
+    initialPoint = np.random.uniform([.2,-.1,.1,.75,1.2],[1,.1,.5,1.8,2])
 
-#     result = optimizeLap(initialPoint)
-#     results.append({
-#         'starting_point': initialPoint,
-#         'iterations': result.nit,
-#         'Final Point': result.x,
-#         'Feasible': result.success
-#     })
+    result = optimizeLap(initialPoint)
+    results.append({
+        'starting_point': initialPoint,
+        'iterations': result.nit,
+        'Final Point': result.x,
+        'Obj' : result.fun,
+        'Feasible': result.success
+    })
 
-# for i, res in enumerate(results):
-#     print(f"Run {i+1}:")
-#     print(f" Start: {res['starting_point']}")
-#     print(f"  Final point: {res['Final Point']}")
-#     print(f"  Feasible: {res['Feasible']}")
+for i, res in enumerate(results):
+    print(f"Run {i+1}:")
+    print(f"    Start: {res['starting_point']}")
+    print(f"    Final point: {res['Final Point']}")
+    print(f"    Objective Function Value: {res['Obj']}")
+    print(f"  Feasible: {res['Feasible']}")
