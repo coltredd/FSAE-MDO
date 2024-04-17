@@ -120,5 +120,4 @@ func = np.poly1d(coeff)
 def calculateMu(force):
 
     return func(force)   
-####
-print(calculateMu(1000))
+
