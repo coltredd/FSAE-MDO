@@ -66,7 +66,7 @@ def timeCornerCalc(params):
     # Calculate time to go around corner
 
     timeCorner = (3.14159265*cornerRadius)/vMax
-    # print('Max Corner G: ', cornerMaster)
+    print('Max Corner G: ', cornerMaster)
     return vMax,timeCorner
 
 def timeStrightCalc(vEntry,vMaxAllowed,params):
@@ -186,7 +186,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
 
     timeStraight = timeThrottle + timeBrake + timeLimiter
 
-    # print('Max Acceleration G: ',accelMaster/gravity)
+    print('Max Acceleration G: ',accelMaster/gravity)
     # print('Max Braking Accel: ', deccelMaster/gravity)
     return timeStraight 
 

@@ -60,7 +60,7 @@ vMax = ( 75 ) / 2.237 # max speed of vehicle converted from ( MPH ) to m/s
 # # ax.scatter(search,valTime)
 # # plt.show()
 # t1 = time.perf_counter()
-# # simulate(params)
+# simulate(params)
 # print(simulate(params))
 # t2 = time.perf_counter()
 
@@ -93,43 +93,43 @@ vMax = ( 75 ) / 2.237 # max speed of vehicle converted from ( MPH ) to m/s
 
 # OPTIMIZER
 
-def optimizeLap(startingPoint, method='SLSQP',max_iter=1e3):
+# def optimizeLap(startingPoint, method='SLSQP',max_iter=1e3):
 
-    bounds = [(.2,1.0),(-.1,.1),(.1,.5),(.75,1.8),(1.2,2)] # bounds for the algo X,Y,Z, Ltw, Lwb
+#     bounds = [(.2,1.0),(-.1,.1),(.1,.5),(.75,1.8),(1.2,2)] # bounds for the algo X,Y,Z, Ltw, Lwb
  
-    constraints = [{'type':'ineq','fun': constraintWB},
-                   {'type':'eq',  'fun': constraintY}]
+#     constraints = [{'type':'ineq','fun': constraintWB},
+#                    {'type':'eq',  'fun': constraintY}]
 
-    result = minimize(simulate,startingPoint,method=method, bounds = bounds,
-                       constraints = constraints, options = {'maxiter': max_iter, 'disp': True})
+#     result = minimize(simulate,startingPoint,method=method, bounds = bounds,
+#                        constraints = constraints, options = {'maxiter': max_iter, 'disp': True})
     
-    return result
-
-# initialPoint = [.734,0,.292,1.27,1.53]
+#     return result
+initialPoint = [.734,0,.292,1.27,1.53]
+print(simulate(initialPoint))
 # result = optimizeLap(initialPoint)
 # print(result.x)
 # print(result.jac)
 
 
-results = []
-num_runs = 10
-# multistart that jawn
-for run in range(num_runs):
+# results = []
+# num_runs = 10
+# # multistart that jawn
+# for run in range(num_runs):
     
-    initialPoint = np.random.uniform([.2,-.1,.1,.75,1.2],[1,.1,.5,1.8,2])
+#     initialPoint = np.random.uniform([.2,-.1,.1,.75,1.2],[1,.1,.5,1.8,2])
 
-    result = optimizeLap(initialPoint)
-    results.append({
-        'starting_point': initialPoint,
-        'iterations': result.nit,
-        'Final Point': result.x,
-        'Obj' : result.fun,
-        'Feasible': result.success
-    })
+#     result = optimizeLap(initialPoint)
+#     results.append({
+#         'starting_point': initialPoint,
+#         'iterations': result.nit,
+#         'Final Point': result.x,
+#         'Obj' : result.fun,
+#         'Feasible': result.success
+#     })
 
-for i, res in enumerate(results):
-    print(f"Run {i+1}:")
-    print(f"    Start: {res['starting_point']}")
-    print(f"    Final point: {res['Final Point']}")
-    print(f"    Objective Function Value: {res['Obj']}")
-    print(f"  Feasible: {res['Feasible']}")
+# for i, res in enumerate(results):
+#     print(f"Run {i+1}:")
+#     print(f"    Start: {res['starting_point']}")
+#     print(f"    Final point: {res['Final Point']}")
+#     print(f"    Objective Function Value: {res['Obj']}")
+#     print(f"  Feasible: {res['Feasible']}")
