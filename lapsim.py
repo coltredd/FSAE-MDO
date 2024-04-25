@@ -38,7 +38,7 @@ def timeCornerCalc(params):
     check = 1
     iter = 0
     cornerGuess = 1.5*gravity
-    maxIter = 1e4
+    maxIter = 1e3
     
     
     while (check > tol) and (iter<maxIter):
@@ -47,6 +47,7 @@ def timeCornerCalc(params):
         reactFR = Wf - reactFL 
         reactRL = (1/Ltw)*(Wr*((Ltw/2)+cgY)+mass*cornerGuess*cgZ)
         reactRR = Wr - reactRL
+        
         minReact = max(reactFL,reactRR,reactRL,reactFR)
 
         muDerive = calculateMu(minReact)
@@ -66,7 +67,7 @@ def timeCornerCalc(params):
     # Calculate time to go around corner
 
     timeCorner = (3.14159265*cornerRadius)/vMax
-    print('Max Corner G: ', cornerMaster)
+    # print('Max Corner G: ', cornerMaster)
     return vMax,timeCorner
 
 def timeStrightCalc(vEntry,vMaxAllowed,params):
@@ -148,7 +149,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
     check = 1
     iter = 0
     deccelGuess = 1.2*gravity
-    maxIter = 1e4
+    maxIter = 1e3
     while (check > tol) and (iter<maxIter):
     
         # calculate horizontal force by tires from guess accel
@@ -158,7 +159,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
         frontLoadTire = frontLoad/2
         muDerive = calculateMu(frontLoadTire)*0.95
         
-        forceTraction = muDerive*rearLoad
+        forceTraction = muDerive*frontLoad
         deccelDerive = (forceTraction)/mass        
         error = deccelDerive - deccelGuess
         check = abs(error)
@@ -186,7 +187,7 @@ def timeStrightCalc(vEntry,vMaxAllowed,params):
 
     timeStraight = timeThrottle + timeBrake + timeLimiter
 
-    print('Max Acceleration G: ',accelMaster/gravity)
+    # print('Max Acceleration G: ',accelMaster/gravity)
     # print('Max Braking Accel: ', deccelMaster/gravity)
     return timeStraight 
 
